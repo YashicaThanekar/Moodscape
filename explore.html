@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - Moodscape</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+     <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><a href="index.html">MOODSCAPE</a></div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="explore.html" class="nav-link">Explore</a></li>
+                <li><a href="favorites.html" class="nav-link">Favorites</a></li>
+                <li><a href="journal.html" class="nav-link">Journal</a></li>
+            </ul>
+            <div class="profile-icon"></div>
+        </div>
+    </nav>
+
+        <main class="explore-main">
+        <section class="audio-section">
+            <h2>Explore Audios</h2>
+            <div class="audio-categories">
+                <button class="audio-cat-btn" data-category="All">All</button>
+                <button class="audio-cat-btn" data-category="Instruments">Instruments</button>
+                <button class="audio-cat-btn" data-category="Nature">Nature</button>
+                <button class="audio-cat-btn" data-category="Spiritual">Spiritual</button>
+            </div>
+            <div id="audio-list"></div>
+        </section>
+    </main>
+
+    <script>
+    // Audio data with pretty card info (add your own images if available)
+    const audioData = {
+        Instruments: {
+            files: [
+                // Example: { name: 'Guitar Solo', artist: 'Acoustic', src: 'sounds/Instruments/guitar.mp3', img: 'img/guitar.jpg' }
+            ],
+            youtube: 'https://www.youtube.com/playlist?list=YOUR_INSTRUMENTS_PLAYLIST'
+        },
+        Nature: {
+            files: [
+                { name: 'Forest Sounds', artist: 'Nature', src: 'sounds/Nature/forest sounds.mp3', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=80&h=80' },
+                { name: 'Ocean Waves', artist: 'Nature', src: 'sounds/Nature/ocean waves.mp3', img: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=facearea&w=80&h=80' },
+                { name: 'Rain Noise', artist: 'Nature', src: 'sounds/Nature/rain noise.mp3', img: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=80&h=80' }
+            ],
+            youtube: 'https://www.youtube.com/playlist?list=YOUR_NATURE_PLAYLIST'
+        },
+        Spiritual: {
+            files: [
+                { name: 'Indian Flute', artist: 'Spiritual', src: 'sounds/Spiritual/Indian flute.mp3', img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=facearea&w=80&h=80' },
+                { name: 'Krishna Relaxing Flute', artist: 'Spiritual', src: 'sounds/Spiritual/krishna relaxing flute.mp3', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=facearea&w=80&h=80' },
+                { name: 'Shri Ramaya Namaha', artist: 'Spiritual', src: 'sounds/Spiritual/shri ramaya namaha.mp3', img: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=facearea&w=80&h=80' }
+            ],
+            youtube: 'https://www.youtube.com/playlist?list=YOUR_SPIRITUAL_PLAYLIST'
+        }
+    };
+
+    function renderAudios(category) {
+        function formatTime(secs) {
+            if (isNaN(secs)) return '0:00';
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        let currentAudio = null;
+        let currentCard = null;
+
+        const audioList = document.getElementById('audio-list');
+        audioList.innerHTML = '';
+        if (category === 'All') {
+            // Gather all audios from all categories into a single array
+            let allAudios = [];
+            Object.keys(audioData).forEach(cat => {
+                audioData[cat].files.forEach((audio, idx) => {
+                    allAudios.push({ ...audio, audioId: `${cat}-${idx}` });
+                });
+            });
+            if (allAudios.length) {
+                audioList.innerHTML += `<div class="audio-grid">${allAudios.map(audio => `
+                    <div class="audio-item" data-audio-id="${audio.audioId}">
+                        <img class="audio-thumb" src="${audio.img || 'https://placehold.co/56x56/0097a7/fff?text=♪'}" alt="${audio.name}">
+                        <div class="audio-meta">
+                            <span class="audio-title">${audio.name}</span>
+                            <div class="audio-time-row">
+                                <span class="audio-current">0:00</span>
+                                <span class="audio-duration">0:00</span>
+                            </div>
+                            <div class="audio-progress"><div class="audio-progress-bar"></div></div>
+                        </div>
+                        <audio class="audio-player" src="${audio.src}"></audio>
+                    </div>`).join('')}</div>`;
+            } else {
+                audioList.innerHTML = '<p>No audios available.</p>';
+            }
+        } else {
+            const files = audioData[category].files;
+            const ytLink = audioData[category].youtube;
+            if (files.length) {
+                files.forEach((audio, idx) => {
+                    const audioId = `${category}-${idx}`;
+                    audioList.innerHTML += `
+                    <div class="audio-item" data-audio-id="${audioId}">
+                        <img class="audio-thumb" src="${audio.img || 'https://placehold.co/56x56/0097a7/fff?text=♪'}" alt="${audio.name}">
+                        <div class="audio-meta">
+                            <span class="audio-title">${audio.name}</span>
+                            <div class="audio-time-row">
+                                <span class="audio-current">0:00</span>
+                                <span class="audio-duration">0:00</span>
+                            </div>
+                            <div class="audio-progress"><div class="audio-progress-bar"></div></div>
+                        </div>
+                        <audio class="audio-player" src="${audio.src}"></audio>
+                    </div>`;
+                });
+            } else {
+                audioList.innerHTML = '<p>No audios available in this category.</p>';
+            }
+            audioList.innerHTML += `<div class="yt-link"><a href="${ytLink}" target="_blank">Listen more on YouTube</a></div>`;
+        }
+
+        // Add interactivity after rendering
+        document.querySelectorAll('.audio-item').forEach(card => {
+            const audio = card.querySelector('audio');
+            const progressBar = card.querySelector('.audio-progress-bar');
+            const progressContainer = card.querySelector('.audio-progress');
+            const currentTimeEl = card.querySelector('.audio-current');
+            const durationEl = card.querySelector('.audio-duration');
+
+            // Set duration when loaded
+            audio.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audio.duration);
+            });
+
+            // Update progress bar and time
+            audio.addEventListener('timeupdate', () => {
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                if (audio.duration) {
+                    progressBar.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+                } else {
+                    progressBar.style.width = '0%';
+                }
+            });
+
+            // Seek on progress bar click/drag
+            let isSeeking = false;
+            function seek(e) {
+                const rect = progressContainer.getBoundingClientRect();
+                const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                const percent = Math.max(0, Math.min(1, x / rect.width));
+                if (audio.duration) {
+                    audio.currentTime = percent * audio.duration;
+                }
+            }
+            progressContainer.addEventListener('mousedown', e => {
+                isSeeking = true;
+                seek(e);
+            });
+            progressContainer.addEventListener('touchstart', e => {
+                isSeeking = true;
+                seek(e);
+            });
+            window.addEventListener('mousemove', e => {
+                if (isSeeking) seek(e);
+            });
+            window.addEventListener('touchmove', e => {
+                if (isSeeking) seek(e);
+            });
+            window.addEventListener('mouseup', () => { isSeeking = false; });
+            window.addEventListener('touchend', () => { isSeeking = false; });
+
+            // Play/pause on card click (except progress bar)
+            card.addEventListener('click', (e) => {
+                if (e.target.classList.contains('audio-progress') || e.target.classList.contains('audio-progress-bar')) return;
+                if (e.target.tagName.toLowerCase() === 'audio') return;
+                if (currentAudio && currentAudio !== audio) {
+                    currentAudio.pause();
+                    if (currentCard) currentCard.classList.remove('active');
+                }
+                if (audio.paused) {
+                    audio.play();
+                    card.classList.add('active');
+                    currentAudio = audio;
+                    currentCard = card;
+                } else {
+                    audio.pause();
+                    card.classList.remove('active');
+                    currentAudio = null;
+                    currentCard = null;
+                }
+            });
+
+            // Remove active state when audio ends
+            audio.addEventListener('ended', () => {
+                card.classList.remove('active');
+                currentAudio = null;
+                currentCard = null;
+            });
+        });
+    }
+
+    document.querySelectorAll('.audio-cat-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.audio-cat-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            renderAudios(this.dataset.category);
+        });
+    });
+
+    // Initial load
+    renderAudios('All');
+    </script>
+
+    </body>
+    </html>
